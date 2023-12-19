@@ -5,7 +5,7 @@ from tkinter import font, ttk, StringVar, messagebox, PhotoImage
 from PIL import Image, ImageDraw, ImageTk
 from playsound import playsound
 import requests
-from process_input import process_input
+from modules.process_input import process_input
 from modules.utils import speak, recognize_speech
 from modules.reminders import get_reminders_for_period, mark_reminder_as_done
 
