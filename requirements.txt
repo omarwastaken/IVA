@@ -1,0 +1,11 @@
+openai
+spacy
+pyttsx3
+parsedatetime
+python-dateutil
+tzlocal
+playsound
+gTTS
+flask
+wikipedia
+requests
