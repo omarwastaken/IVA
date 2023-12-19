@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVA Web App</title>
+</head>
+
+<body>
+
+    <input type="text" id="userInput" placeholder="Type your question here...">
+    <button onclick="askIVA()">Ask</button>
+    <button onclick="startRecognition()">🎙</button>
+    <div id="responseArea"></div>
+
+    <script>
+        function askIVA() {
+            let query = document.getElementById('userInput').value;
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: query })
+            }).then(response => response.json()).then(data => {
+                document.getElementById('responseArea').innerText = data.response;
+            });
+        }
+
+        function startRecognition() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.start();
+
+            recognition.onresult = function (event) {
+                const speechResult = event.results[0][0].transcript;
+                document.getElementById('userInput').value = speechResult;
+                askIVA();
+            };
+        }
+    </script>
+
+</body>
+
+</html>

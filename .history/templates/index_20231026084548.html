@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVA Chat Assistant</title>
+    <style>
+        .chat-window {
+            border: 1px solid #ccc;
+            height: 400px;
+            overflow-y: scroll;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+        .chat-input {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to IVA Chat Assistant</h1>
+    <div class="chat-window" id="chatWindow"></div>
+    <div>
+        <input type="text" class="chat-input" id="userInput" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="startVoiceInput()">Voice Input</button>
+    </div>
+    <script>
+        function sendMessage() {
+            // TODO: Handle sending the message
+        }
+        
+        function startVoiceInput() {
+            // TODO: Handle voice input
+        }
+    </script>
+</body>
+</html>
