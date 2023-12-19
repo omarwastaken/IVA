@@ -1,5 +1,5 @@
 import sys
-from modules.utils import speak, save_to_file, recognize_speech
+from modules.utils import save_to_file
 from modules.reminders import handle_reminder_request
 from modules.ai import get_openai_response
 

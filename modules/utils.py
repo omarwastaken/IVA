@@ -15,8 +15,8 @@ TTS_ENGINE = 2
 
 # ElevenLabs API credentials and configuration
 CHUNK_SIZE = 1024
-ELEVENLABS_API_KEY = 'ba51100a1f87c3c2f1361d44d9b082d7'
-ELEVENLABS_VOICE = 'ThT5KcBeYPX3keUQqHPh'
+ELEVENLABS_API_KEY = 'ba51100a1f87c3c2f1361d44d9b082d7'   # Replace with your actual API key
+ELEVENLABS_VOICE = 'ThT5KcBeYPX3keUQqHPh' 
 
 # Initialize the text-to-speech engine for pyttsx3
 engine = pyttsx3.init() if TTS_ENGINE == 1 else None
