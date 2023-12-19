@@ -18,8 +18,8 @@ MAX_CONTEXT_QUESTIONS = 10
 # Setup
 openai.api_key = OPENAI_API_KEY  
 
-# Function to get response from OpenAI
 def get_openai_response(previous_questions_and_answers):
+    """Get response from openai"""
     messages = [{"role": "system", "content": INSTRUCTIONS}]
     messages.extend({"role": role.lower(), "content": content} for role, content in
                     previous_questions_and_answers[-MAX_CONTEXT_QUESTIONS:])
