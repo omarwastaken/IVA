@@ -12,11 +12,14 @@ from tzlocal import get_localzone
 from modules.utils import save_to_file
 
 # ======================== Google Calendar API Constants ========================
-TOKEN_PATH = os.path.join('config', 'token.json')
-CREDENTIALS_PATH = os.path.join('config', 'credentials.json')
-SCOPES = ['https://www.googleapis.com/auth/calendar']
+
+# Define constants for Google Calendar API
+TOKEN_PATH = os.path.join('config', 'token.json')  # Path to store access token
+CREDENTIALS_PATH = os.path.join('config', 'credentials.json')  # Path to store API credentials
+SCOPES = ['https://www.googleapis.com/auth/calendar']  # Required scopes for Google Calendar access
 
 # ======================== User Interaction Phrases ========================
+# Define phrases for interaction with the user
 
 # Phrases for user confirmation
 CONFIRMATION_PHRASES = [
@@ -60,25 +63,29 @@ REMOVAL_PHRASES = (
 # ============ Google Calendar Functions ============
 
 def get_calendar_service():
-    """Returns a Google Calendar service object."""
+    """Authenticates and returns a service object to interact with Google Calendar"""
     creds = None
+    # Check if token file exists to reuse credentials
     if os.path.exists(TOKEN_PATH):
         creds = Credentials.from_authorized_user_file(TOKEN_PATH)
+    # Refresh or create new credentials if not valid    
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            creds.refresh(Request()) # Refresh existing credentials
         else:
+            # Initiate new authentication flow if no valid credentials
             flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, SCOPES)
             creds = flow.run_local_server(port=0)
+            # Save new credentials to file
             with open(TOKEN_PATH, 'w') as token:
                 token.write(creds.to_json())
     return build('calendar', 'v3', credentials=creds)
 
 def insert_google_event(service, event):
-    """Inserts an event into Google Calendar and returns the event link."""
+    """Inserts an event into Google Calendar and handles potential exceptions"""
     try:
         event = service.events().insert(calendarId='primary', body=event).execute()
-        return event.get('htmlLink')
+        return event.get('htmlLink') # Return the link to the created event
     except Exception as e:
         if "The requested identifier already exists" in str(e):
             return "The reminder already exists in the calendar."
@@ -87,12 +94,12 @@ def insert_google_event(service, event):
             return None
 
 def set_google_reminder(date_str, time_str, reminder_content, is_recurring):
-    """Sets a reminder in Google Calendar."""
+    """Creates a Google Calendar event based on provided reminder details"""
     service = get_calendar_service()
-    local_timezone = str(get_localzone())
+    local_timezone = str(get_localzone()) # Get the local timezone
     reminder_datetime_str = f"{date_str} {time_str}"
     reminder_datetime_obj = datetime.datetime.strptime(reminder_datetime_str, '%Y-%m-%d %I:%M %p')
-    rfc_datetime = reminder_datetime_obj.isoformat()
+    rfc_datetime = reminder_datetime_obj.isoformat() # Convert to RFC3339 format
     event = {
         'summary': reminder_content,
         'start': {'dateTime': rfc_datetime, 'timeZone': local_timezone},
@@ -100,19 +107,19 @@ def set_google_reminder(date_str, time_str, reminder_content, is_recurring):
         'reminders': {'useDefault': False, 'overrides': [{'method': 'popup', 'minutes': 10}]},
     }
     if is_recurring:
-        event['recurrence'] = ['RRULE:FREQ=DAILY']
+        event['recurrence'] = ['RRULE:FREQ=DAILY'] # Set recurrence for daily reminders
     event_link = insert_google_event(service, event)
     print(f"Event created: {event_link}")
 
 # ============ Reminder Handling Functions ============
 
 def is_reminder_request(user_input):
-    """Determines if the user_input indicates a reminder request."""
+    """Determines if the user input is a request to set a reminder"""
     user_input_lower = user_input.lower()
     return any(pattern in user_input_lower for pattern in CLEAR_INTENT_PHRASES + INQUIRY_PHRASES + VAGUE_PHRASES)
 
 def handle_reminder_request(user_input):
-    """Handles a reminder request from user input."""
+    """Processes a user input to handle a reminder request"""
     response_messages = []
     if is_reminder_request(user_input):
         if any(pattern in user_input.lower() for pattern in INQUIRY_PHRASES):
@@ -126,7 +133,7 @@ def handle_reminder_request(user_input):
     return False
 
 def save_reminder(reminder_content, date_str, time_str, is_recurring):
-    """Saves the reminder directly without asking for user confirmation."""
+    """Saves reminder details and creates a Google Calendar event"""
     response_messages = []
     reminder_datetime_str = f"{date_str} {time_str}"
     reminder_datetime_obj = parser.parse(reminder_datetime_str)
@@ -146,7 +153,7 @@ def save_reminder(reminder_content, date_str, time_str, is_recurring):
     return response_messages
 
 def create_reminder(user_input):
-    """Creates a reminder based on user input."""
+    """Main function to create a reminder from user input"""
     response_messages = []
     date_str, time_str, is_recurring = get_reminder_datetime(user_input)
     reminder_content = get_reminder_content(user_input, date_str, time_str)
@@ -159,7 +166,7 @@ def create_reminder(user_input):
     return response_messages
 
 def get_reminders_for_period(period):
-    """Fetches events for the specified period ('day' or 'week')."""
+    """Retrieves reminders from Google Calendar for a given time period (day or week)"""
     service = get_calendar_service()
     tz = get_localzone()
     now = datetime.datetime.now(tz)
@@ -187,7 +194,7 @@ def get_reminders_for_period(period):
     return formatted_events
 
 def mark_reminder_as_done(event_id):
-    """Marks a reminder as done in Google Calendar by setting its status to 'cancelled'."""
+    """Marks a reminder in Google Calendar as completed"""
     service = get_calendar_service()
     try:
         event = service.events().get(calendarId='primary', eventId=event_id).execute()
@@ -200,25 +207,29 @@ def mark_reminder_as_done(event_id):
 # ============ Utility and Extraction Functions ============
 
 def generate_time_formats(time_str):
-    """Generate multiple formats for a given time string."""
+    """Generates different time formats for string comparison"""
     base_time = time_str.lstrip('0').lower()
     time_alternate = base_time.replace(' ', '.').replace('am', 'a.m.').replace('pm', 'p.m.')
     time_short = base_time.split(':')[0].replace('am', 'a.m.').replace('pm', 'p.m.')
     return [time_str, time_alternate, time_short]
 
 def extract_datetime(user_input):
-    """Extracts date and time from user input."""
+    """Extracts date and time information from user input"""
     cal = pdt.Calendar()
+    # Use parsedatetime to parse natural language date and time
     time_struct, parse_status = cal.parse(user_input)
     datetime_obj = datetime.datetime(*time_struct[:6])
+    # Adjust for dates set in the past
     today = datetime.datetime.today()
     if datetime_obj.date() < today.date():
         datetime_obj = datetime_obj.replace(month=datetime_obj.month % 12 + 1)
+    # Adjust for 'on the XXth' phrases in user input
     if "on the" in user_input and datetime_obj.day == 1:
         match = re.search(r"on the (\d+)(st|nd|rd|th)", user_input)
         if match:
             mentioned_day = int(match.group(1))
             datetime_obj = datetime_obj.replace(day=mentioned_day)
+    # Adjust for general time phrases like 'morning', 'evening'
     time_adjustments = {
         "morning": 7,
         "afternoon": 13,
@@ -236,7 +247,7 @@ def extract_datetime(user_input):
     return date_str, time_str, is_recurring
 
 def extract_reminder_content(user_input, date_str, time_str):
-    """Extracts the reminder content from user input."""
+    """Extracts the main content of the reminder from user input"""
     nlp = spacy.load("en_core_web_sm")
     doc = nlp(user_input)
     content_tokens = [token.text for token in doc if token.ent_type_ not in ['DATE', 'TIME', 'ORDINAL']]
@@ -256,17 +267,15 @@ def extract_reminder_content(user_input, date_str, time_str):
     return content
 
 def get_reminder_content(user_input, date_str, time_str):
-    """Extracts the reminder content from user input."""
+    """Wrapper function to extract reminder content"""
     reminder_content = extract_reminder_content(user_input, date_str, time_str)
     if not reminder_content:
-        # In GUI, this situation can be handled by prompting the user in the interface
-        return None  # GUI should ask user for input
+        return None
     return reminder_content
 
 def get_reminder_datetime(user_input):
-    """Extracts the reminder date and time from user input."""
+    """Extracts both the date and time for a reminder from user input"""
     date_str, time_str, is_recurring = extract_datetime(user_input)
     if not date_str or not time_str:
-        # In GUI, this situation can be handled by prompting the user in the interface
-        return None, None, None  # GUI should ask user for input
+        return None, None, None
     return date_str, time_str, is_recurring

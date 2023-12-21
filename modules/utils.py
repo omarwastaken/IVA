@@ -21,8 +21,8 @@ ELEVENLABS_VOICE = 'ThT5KcBeYPX3keUQqHPh'
 # Initialize the text-to-speech engine for pyttsx3
 engine = pyttsx3.init() if TTS_ENGINE == 1 else None
 
-# Function to speak text aloud and print
 def speak(text):
+    """Function to speak text aloud and print"""
     print(f"IVA: {text}")
     if TTS_ENGINE == 1 and engine is not None:
         engine.say(text)
@@ -61,8 +61,8 @@ def speak(text):
         else:
             print(f"Error with ElevenLabs TTS: HTTP Status Code {response.status_code}, Response: {response.text}")
 
-# Function to recognize speech
 def recognize_speech():
+    """Function to recognize speech"""
     r = sr.Recognizer()
     with sr.Microphone() as source:
         print("Speak now...")

@@ -23,7 +23,6 @@ def get_openai_response(previous_questions_and_answers):
     messages = [{"role": "system", "content": INSTRUCTIONS}]
     messages.extend({"role": role.lower(), "content": content} for role, content in
                     previous_questions_and_answers[-MAX_CONTEXT_QUESTIONS:])
-
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
