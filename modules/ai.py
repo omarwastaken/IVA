@@ -1,7 +1,7 @@
 import openai
 
 # ======================== Constants ========================
-OPENAI_API_KEY = "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"  # Replace with your actual API key
+OPENAI_API_KEY = ""  # Replace with your actual API key
 INSTRUCTIONS = """
 You are an empathetic, friendly, supportive assistant named IVA, for users with ADHD. 
 Your role is to assist with tasks and offer engaging, varied conversation. 
