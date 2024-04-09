@@ -51,5 +51,5 @@ This project is licensed under the GNU General Public License v3.0 license. See 
 
 ##  Contact
 
-If you have any questions or suggestions, feel free to reach out by leaving an Issue.
+If you have any questions or suggestions, feel free to reach out by leaving an Issue or through Discussions.
 
