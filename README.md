@@ -1,6 +1,6 @@
 #  IVA
 
-<img src="[(https://github.com/omarwastaken/IVA/blob/69c34d125d3ad2f8f087962334bc102c0ed590c6/assets/iva_icon.png)](https://github.com/omarwastaken/IVA/blob/69c34d125d3ad2f8f087962334bc102c0ed590c6/assets/iva_icon.png)" width="100" height="100">
+<img src="https://github.com/omarwastaken/IVA/blob/69c34d125d3ad2f8f087962334bc102c0ed590c6/assets/iva_icon.png" width="100" height="100">
 IVA AI Assistant - Harnessing Focus, Boosting Productivity – Your ADHD Ally for a Balanced Life.
 This project is a user-friendly AI assistant designed to assist ADHD users struggling with productivity. focus, tracking To-do list, needing emotional support with prioterising tasks.
 
